@@ -1,73 +1,75 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>🍊 예측 실행</title>
-    <style>
-        body {
-            font-family: "Segoe UI", sans-serif;
-            padding: 40px;
-        }
-        h1 {
-            font-size: 28px;
-        }
-        ul {
-            padding-left: 20px;
-        }
-        li {
-            margin-bottom: 6px;
-        }
-        .error {
-            color: red;
-            font-weight: bold;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🍊 예측 실행</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 40px;
+    }
+    h1 {
+      font-size: 2rem;
+    }
+    button {
+      padding: 10px 15px;
+      font-size: 1rem;
+    }
+    ul {
+      margin-top: 10px;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+    .success {
+      color: green;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-    <h1>🍊 예측 실행</h1>
-    <button onclick="fetchPrediction()">예측 실행</button>
+  <h1>🍊 예측 실행</h1>
+  <button onclick="fetchPrediction()">예측 실행</button>
+  <p>📂 예측 회차: <span id="round">불러오는 중...</span></p>
 
-    <h3>📁 예측 회차: <span id="round">불러오는 중...</span></h3>
-    <h3>앞 기준 Top 5</h3>
-    <ul id="result">
-        <li>⏳ 데이터 불러오는 중...</li>
-    </ul>
+  <h2>앞 기준 Top 5</h2>
+  <ul id="results">
+    <li>⏳ 데이터 불러오는 중...</li>
+  </ul>
 
-    <script>
-        async function fetchPrediction() {
-            const round = document.getElementById("round");
-            const resultList = document.getElementById("result");
+  <script>
+    async function fetchPrediction() {
+      const roundEl = document.getElementById("round");
+      const resultsEl = document.getElementById("results");
 
-            round.textContent = "불러오는 중...";
-            resultList.innerHTML = "<li>⏳ 데이터 불러오는 중...</li>";
+      try {
+        roundEl.innerText = "불러오는 중...";
+        resultsEl.innerHTML = "<li>⏳ 데이터 불러오는 중...</li>";
 
-            try {
-                const response = await fetch("https://ladder-server-clean.up.railway.app/predict");
-                const data = await response.json();
+        const response = await fetch("https://ladder-server-clean-production.up.railway.app/predict");
+        if (!response.ok) throw new Error("서버 응답 실패");
 
-                round.textContent = data.예측회차 || "없음";
+        const data = await response.json();
 
-                resultList.innerHTML = "";
+        roundEl.innerText = `예측 회차: ${data.예측회차}`;
+        resultsEl.innerHTML = "";
 
-                if (data["앞기준 예측값"].length === 0) {
-                    resultList.innerHTML = "<li class='error'>❌ 예측값 없음</li>";
-                    return;
-                }
+        data["앞기준 예측값"].forEach(item => {
+          const li = document.createElement("li");
+          li.innerText = "✅ " + item;
+          resultsEl.appendChild(li);
+        });
+      } catch (error) {
+        roundEl.innerText = "예측 실패";
+        resultsEl.innerHTML = "<li class='error'>❌ 네트워크 오류</li>";
+        console.error(error);
+      }
+    }
 
-                data["앞기준 예측값"].forEach(item => {
-                    const li = document.createElement("li");
-                    li.textContent = item;
-                    resultList.appendChild(li);
-                });
-
-            } catch (error) {
-                round.textContent = "예측 실패";
-                resultList.innerHTML = "<li class='error'>❌ 네트워크 오류</li>";
-            }
-        }
-
-        // 자동 실행
-        fetchPrediction();
-    </script>
+    // 자동 실행
+    fetchPrediction();
+  </script>
 </body>
 </html>
