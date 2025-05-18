@@ -5,7 +5,8 @@
     <title>사다리 예측 결과 (Top 3)</title>
 </head>
 <body>
-    <h2>사다리 예측 결과 (Top 3)</h2>
+    <h2>사다리 예측 결과</h2>
+    <h3 id="round-info">예측 회차: 불러오는 중...</h3>
     <ul id="result-list">
         <li>불러오는 중...</li>
     </ul>
@@ -14,20 +15,27 @@
         fetch('https://ladder-server-clean-production.up.railway.app/predict')
             .then(res => res.json())
             .then(data => {
+                const round = document.getElementById('round-info');
                 const list = document.getElementById('result-list');
                 list.innerHTML = '';
+
                 if (data['예측값 Top3']) {
+                    round.textContent = `예측 회차: ${data['예측회차']}회`;
+
                     data['예측값 Top3'].forEach((item, idx) => {
                         const li = document.createElement('li');
                         li.textContent = `${idx + 1}위: ${item}`;
                         list.appendChild(li);
                     });
                 } else {
+                    round.textContent = '예측 회차: 알 수 없음';
                     list.innerHTML = '<li>예측 실패</li>';
                 }
             })
             .catch(err => {
+                const round = document.getElementById('round-info');
                 const list = document.getElementById('result-list');
+                round.textContent = '예측 회차: 에러';
                 list.innerHTML = '<li>서버 오류</li>';
             });
     </script>
