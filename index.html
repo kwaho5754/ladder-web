@@ -1,75 +1,91 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🍊 예측 실행</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 40px;
-    }
-    h1 {
-      font-size: 2rem;
-    }
-    button {
-      padding: 10px 15px;
-      font-size: 1rem;
-    }
-    ul {
-      margin-top: 10px;
-    }
-    .error {
-      color: red;
-      font-weight: bold;
-    }
-    .success {
-      color: green;
-      font-weight: bold;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>🍊 예측 실행</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            padding: 30px;
+        }
+        h1 {
+            font-size: 32px;
+            font-weight: bold;
+        }
+        button {
+            font-size: 16px;
+            padding: 8px 16px;
+        }
+        .result-block {
+            margin-top: 20px;
+        }
+        .section-title {
+            font-weight: bold;
+            font-size: 20px;
+            margin-top: 16px;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        ul {
+            padding-left: 20px;
+        }
+    </style>
 </head>
 <body>
-  <h1>🍊 예측 실행</h1>
-  <button onclick="fetchPrediction()">예측 실행</button>
-  <p>📂 예측 회차: <span id="round">불러오는 중...</span></p>
+    <h1>🍊 예측 실행</h1>
+    <button onclick="fetchPrediction()">예측 실행</button>
 
-  <h2>앞 기준 Top 5</h2>
-  <ul id="results">
-    <li>⏳ 데이터 불러오는 중...</li>
-  </ul>
+    <div class="result-block">
+        <p id="round">📁 예측 회차: </p>
 
-  <script>
-    async function fetchPrediction() {
-      const roundEl = document.getElementById("round");
-      const resultsEl = document.getElementById("results");
+        <div>
+            <div class="section-title">앞 기준 Top 5</div>
+            <ul id="frontList"></ul>
+        </div>
 
-      try {
-        roundEl.innerText = "불러오는 중...";
-        resultsEl.innerHTML = "<li>⏳ 데이터 불러오는 중...</li>";
+        <div>
+            <div class="section-title">뒤 기준 Top 5</div>
+            <ul id="backList"></ul>
+        </div>
+    </div>
 
-        const response = await fetch("https://ladder-server-clean-production.up.railway.app/predict");
-        if (!response.ok) throw new Error("서버 응답 실패");
+    <script>
+        async function fetchPrediction() {
+            const roundElem = document.getElementById("round");
+            const frontList = document.getElementById("frontList");
+            const backList = document.getElementById("backList");
 
-        const data = await response.json();
+            roundElem.innerHTML = "📁 예측 회차: 예측 실패";
+            frontList.innerHTML = '<li class="error">❌ 네트워크 오류</li>';
+            backList.innerHTML = '<li class="error">❌ 네트워크 오류</li>';
 
-        roundEl.innerText = `예측 회차: ${data.예측회차}`;
-        resultsEl.innerHTML = "";
+            try {
+                const response = await fetch("https://ladder-server-clean-production.up.railway.app/predict");
+                const data = await response.json();
 
-        data["앞기준 예측값"].forEach(item => {
-          const li = document.createElement("li");
-          li.innerText = "✅ " + item;
-          resultsEl.appendChild(li);
-        });
-      } catch (error) {
-        roundEl.innerText = "예측 실패";
-        resultsEl.innerHTML = "<li class='error'>❌ 네트워크 오류</li>";
-        console.error(error);
-      }
-    }
+                roundElem.innerHTML = `📁 예측 회차: ${data["예측회차"] || "예측 실패"}`;
 
-    // 자동 실행
-    fetchPrediction();
-  </script>
+                frontList.innerHTML = "";
+                (data["앞기준 예측값"] || []).forEach(item => {
+                    const li = document.createElement("li");
+                    li.textContent = "✅ " + item;
+                    frontList.appendChild(li);
+                });
+
+                backList.innerHTML = "";
+                (data["뒤기준 예측값"] || []).forEach(item => {
+                    const li = document.createElement("li");
+                    li.textContent = "✅ " + item;
+                    backList.appendChild(li);
+                });
+            } catch (error) {
+                console.error(error);
+                frontList.innerHTML = '<li class="error">❌ 네트워크 오류</li>';
+                backList.innerHTML = '<li class="error">❌ 네트워크 오류</li>';
+            }
+        }
+    </script>
 </body>
 </html>
