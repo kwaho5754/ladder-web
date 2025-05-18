@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>사다리 예측 시스템</title>
+    <title>사다리 예측 결과 (Top 3)</title>
 </head>
 <body>
     <h2>사다리 예측 결과 (Top 3)</h2>
@@ -11,7 +11,7 @@
     </ul>
 
     <script>
-        fetch('/predict')
+        fetch('https://ladder-server-clean-production.up.railway.app/predict')
             .then(res => res.json())
             .then(data => {
                 const list = document.getElementById('result-list');
