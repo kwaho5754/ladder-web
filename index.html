@@ -7,36 +7,42 @@
 <body>
     <h2>사다리 예측 결과</h2>
     <h3 id="round-info">예측 회차: 불러오는 중...</h3>
-    <ul id="result-list">
-        <li>불러오는 중...</li>
-    </ul>
+
+    <h4>✅ 원본 블럭 기준</h4>
+    <ul id="original-list"><li>불러오는 중...</li></ul>
+
+    <h4>🔁 완전 대칭 블럭 기준</h4>
+    <ul id="mirror-list"><li>불러오는 중...</li></ul>
+
+    <h4>🔀 의미 대칭 블럭 기준</h4>
+    <ul id="structural-list"><li>불러오는 중...</li></ul>
 
     <script>
         fetch('https://ladder-server-clean-production.up.railway.app/predict')
             .then(res => res.json())
             .then(data => {
                 const round = document.getElementById('round-info');
-                const list = document.getElementById('result-list');
-                list.innerHTML = '';
+                round.textContent = `예측 회차: ${data['예측회차']}회`;
 
-                if (data['Top3 예측값']) {
-                    round.textContent = `예측 회차: ${data['예측회차']}회`;
-
-                    data['Top3 예측값'].forEach((item, idx) => {
+                function render(listId, top3) {
+                    const ul = document.getElementById(listId);
+                    ul.innerHTML = '';
+                    top3.forEach((item, idx) => {
                         const li = document.createElement('li');
                         li.textContent = `${idx + 1}위: ${item.value} (빈도: ${item.count})`;
-                        list.appendChild(li);
+                        ul.appendChild(li);
                     });
-                } else {
-                    round.textContent = '예측 회차: 알 수 없음';
-                    list.innerHTML = '<li>예측 실패</li>';
                 }
+
+                render('original-list', data['원본 Top3'] || []);
+                render('mirror-list', data['완전대칭 Top3'] || []);
+                render('structural-list', data['의미대칭 Top3'] || []);
             })
             .catch(err => {
-                const round = document.getElementById('round-info');
-                const list = document.getElementById('result-list');
-                round.textContent = '예측 회차: 에러';
-                list.innerHTML = '<li>서버 오류</li>';
+                document.getElementById('round-info').textContent = '예측 회차: 에러';
+                ['original-list', 'mirror-list', 'structural-list'].forEach(id => {
+                    document.getElementById(id).innerHTML = '<li>서버 오류</li>';
+                });
             });
     </script>
 </body>
