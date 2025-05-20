@@ -12,7 +12,6 @@
     </ul>
 
     <script>
-        // 외부 API 서버 주소 (Railway에 배포된 Flask 백엔드)
         fetch('https://ladder-server-clean-production.up.railway.app/predict')
             .then(res => res.json())
             .then(data => {
@@ -25,7 +24,7 @@
 
                     data['Top3 예측값'].forEach((item, idx) => {
                         const li = document.createElement('li');
-                        li.textContent = `${idx + 1}위: ${item}`;
+                        li.textContent = `${idx + 1}위: ${item.value} (빈도: ${item.count})`;
                         list.appendChild(li);
                     });
                 } else {
