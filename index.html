@@ -12,17 +12,17 @@
     </ul>
 
     <script>
-        fetch('https://ladder-server-clean-production.up.railway.app/predict')
+        fetch('/predict')
             .then(res => res.json())
             .then(data => {
                 const round = document.getElementById('round-info');
                 const list = document.getElementById('result-list');
                 list.innerHTML = '';
 
-                if (data['예측값 Top3']) {
+                if (data['Top3 예측값']) {
                     round.textContent = `예측 회차: ${data['예측회차']}회`;
 
-                    data['예측값 Top3'].forEach((item, idx) => {
+                    data['Top3 예측값'].forEach((item, idx) => {
                         const li = document.createElement('li');
                         li.textContent = `${idx + 1}위: ${item}`;
                         list.appendChild(li);
