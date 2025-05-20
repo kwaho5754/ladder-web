@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>사다리 예측 결과 (Top 3)</title>
+    <title>사다리 예측 결과 (블럭 길이별)</title>
 </head>
 <body>
     <h2>사다리 예측 결과</h2>
@@ -24,19 +24,19 @@
                 const round = document.getElementById('round-info');
                 round.textContent = `예측 회차: ${data['예측회차']}회`;
 
-                function render(listId, top3) {
+                function render(listId, blockDict) {
                     const ul = document.getElementById(listId);
                     ul.innerHTML = '';
-                    top3.forEach((item, idx) => {
+                    for (const [size, value] of Object.entries(blockDict)) {
                         const li = document.createElement('li');
-                        li.textContent = `${idx + 1}위: ${item.value} (빈도: ${item.count})`;
+                        li.textContent = `[${size}] 예측: ${value}`;
                         ul.appendChild(li);
-                    });
+                    }
                 }
 
-                render('original-list', data['원본 Top3'] || []);
-                render('mirror-list', data['완전대칭 Top3'] || []);
-                render('structural-list', data['의미대칭 Top3'] || []);
+                render('original-list', data['원본'] || {});
+                render('mirror-list', data['완전대칭'] || {});
+                render('structural-list', data['의미대칭'] || {});
             })
             .catch(err => {
                 document.getElementById('round-info').textContent = '예측 회차: 에러';
