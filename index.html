@@ -14,9 +14,6 @@
     <h4>🔁 완전 대칭 블럭 기준</h4>
     <ul id="mirror-list"><li>불러오는 중...</li></ul>
 
-    <h4>🔀 의미 대칭 블럭 기준</h4>
-    <ul id="structural-list"><li>불러오는 중...</li></ul>
-
     <script>
         fetch('https://ladder-server-clean-production.up.railway.app/predict')
             .then(res => res.json())
@@ -36,11 +33,10 @@
 
                 render('original-list', data['원본'] || {});
                 render('mirror-list', data['완전대칭'] || {});
-                render('structural-list', data['의미대칭'] || {});
             })
             .catch(err => {
                 document.getElementById('round-info').textContent = '예측 회차: 에러';
-                ['original-list', 'mirror-list', 'structural-list'].forEach(id => {
+                ['original-list', 'mirror-list'].forEach(id => {
                     document.getElementById(id).innerHTML = '<li>서버 오류</li>';
                 });
             });
