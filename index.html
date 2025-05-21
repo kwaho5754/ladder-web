@@ -2,17 +2,17 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>사다리 예측 결과 (가중치 Top3)</title>
+    <title>사다리 예측 결과 (역정렬 기반)</title>
 </head>
 <body>
     <h2>사다리 예측 결과</h2>
     <h3 id="round-info">예측 회차: 불러오는 중...</h3>
 
-    <h4>✅ 원본 블럭 기준 (가중치 Top3)</h4>
-    <ul id="original-list"><li>불러오는 중...</li></ul>
+    <h4>🔁 역정렬 블럭 기준 (가중치 Top3)</h4>
+    <ul id="reverse-list"><li>불러오는 중...</li></ul>
 
-    <h4>🔁 완전 대칭 블럭 기준 (가중치 Top3)</h4>
-    <ul id="mirror-list"><li>불러오는 중...</li></ul>
+    <h4>🔁 역정렬 대칭 블럭 기준 (가중치 Top3)</h4>
+    <ul id="reverse-mirror-list"><li>불러오는 중...</li></ul>
 
     <script>
         fetch('https://ladder-server-clean-production.up.railway.app/predict')
@@ -30,12 +30,12 @@
                     });
                 }
 
-                render('original-list', data['원본 Top3'] || []);
-                render('mirror-list', data['대칭 Top3'] || []);
+                render('reverse-list', data['역정렬 Top3'] || []);
+                render('reverse-mirror-list', data['역정렬 대칭 Top3'] || []);
             })
             .catch(err => {
                 document.getElementById('round-info').textContent = '예측 회차: 에러';
-                ['original-list', 'mirror-list'].forEach(id => {
+                ['reverse-list', 'reverse-mirror-list'].forEach(id => {
                     document.getElementById(id).innerHTML = '<li>서버 오류</li>';
                 });
             });
