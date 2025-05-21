@@ -2,37 +2,36 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>사다리 예측 결과 (블럭 길이별)</title>
+    <title>사다리 예측 결과 (가중치 Top3)</title>
 </head>
 <body>
     <h2>사다리 예측 결과</h2>
     <h3 id="round-info">예측 회차: 불러오는 중...</h3>
 
-    <h4>✅ 원본 블럭 기준</h4>
+    <h4>✅ 원본 블럭 기준 (가중치 Top3)</h4>
     <ul id="original-list"><li>불러오는 중...</li></ul>
 
-    <h4>🔁 완전 대칭 블럭 기준</h4>
+    <h4>🔁 완전 대칭 블럭 기준 (가중치 Top3)</h4>
     <ul id="mirror-list"><li>불러오는 중...</li></ul>
 
     <script>
         fetch('https://ladder-server-clean-production.up.railway.app/predict')
             .then(res => res.json())
             .then(data => {
-                const round = document.getElementById('round-info');
-                round.textContent = `예측 회차: ${data['예측회차']}회`;
+                document.getElementById('round-info').textContent = `예측 회차: ${data['예측회차']}회`;
 
-                function render(listId, blockDict) {
+                function render(listId, topList) {
                     const ul = document.getElementById(listId);
                     ul.innerHTML = '';
-                    for (const [size, value] of Object.entries(blockDict)) {
+                    topList.forEach((item, index) => {
                         const li = document.createElement('li');
-                        li.textContent = `[${size}] 예측: ${value}`;
+                        li.textContent = `${index + 1}위: ${item.value} (점수: ${item.score})`;
                         ul.appendChild(li);
-                    }
+                    });
                 }
 
-                render('original-list', data['원본'] || {});
-                render('mirror-list', data['완전대칭'] || {});
+                render('original-list', data['원본 Top3'] || []);
+                render('mirror-list', data['대칭 Top3'] || []);
             })
             .catch(err => {
                 document.getElementById('round-info').textContent = '예측 회차: 에러';
