@@ -2,17 +2,22 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>사다리 예측 결과 (정방향 기반)</title>
+    <title>사다리 예측 요소별 결과</title>
 </head>
 <body>
-    <h2>사다리 예측 결과</h2>
+    <h2>사다리 요소별 예측 결과</h2>
     <h3 id="round-info">예측 회차: 불러오는 중...</h3>
 
-    <h4>▶ 정방향 블럭 기준 (가중치 Top3)</h4>
-    <ul id="forward-list"><li>불러오는 중...</li></ul>
+    <h4>▶ 시작방향 기준</h4>
+    <ul id="side-original"><li>불러오는 중...</li></ul>
+    <ul id="side-mirror"><li>불러오는 중...</li></ul>
 
-    <h4>▶ 정방향 대칭 블럭 기준 (가중치 Top3)</h4>
-    <ul id="forward-mirror-list"><li>불러오는 중...</li></ul>
+    <h4>▶ 줄 수 기준</h4>
+    <ul id="count"><li>불러오는 중...</li></ul>
+
+    <h4>▶ 홀/짝 기준</h4>
+    <ul id="oe-original"><li>불러오는 중...</li></ul>
+    <ul id="oe-mirror"><li>불러오는 중...</li></ul>
 
     <script>
         fetch('https://ladder-server-clean-production.up.railway.app/predict')
@@ -30,12 +35,15 @@
                     });
                 }
 
-                render('forward-list', data['정방향 Top3'] || []);
-                render('forward-mirror-list', data['정방향 대칭 Top3'] || []);
+                render('side-original', data['시작방향 원본'] || []);
+                render('side-mirror', data['시작방향 대칭'] || []);
+                render('count', data['줄수'] || []);
+                render('oe-original', data['홀짝 원본'] || []);
+                render('oe-mirror', data['홀짝 대칭'] || []);
             })
             .catch(err => {
                 document.getElementById('round-info').textContent = '예측 회차: 에러';
-                ['forward-list', 'forward-mirror-list'].forEach(id => {
+                ['side-original', 'side-mirror', 'count', 'oe-original', 'oe-mirror'].forEach(id => {
                     document.getElementById(id).innerHTML = '<li>서버 오류</li>';
                 });
             });
