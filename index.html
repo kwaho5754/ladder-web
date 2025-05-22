@@ -2,62 +2,45 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>사다리 예측 결과 (구간별)</title>
+    <title>사다리 예측값</title>
 </head>
 <body>
-    <h2>사다리 요소별 예측 결과</h2>
+    <h2>사다리 단일 예측 결과</h2>
     <h3 id="round-info">예측 회차: 불러오는 중...</h3>
 
-    <h4>▶ 시작방향 기준</h4>
-    <ul id="side-recent"><li>불러오는 중...</li></ul>
-    <ul id="side-mid"><li>불러오는 중...</li></ul>
-    <ul id="side-old"><li>불러오는 중...</li></ul>
-
-    <h4>▶ 줄 수 기준</h4>
-    <ul id="count-recent"><li>불러오는 중...</li></ul>
-    <ul id="count-mid"><li>불러오는 중...</li></ul>
-    <ul id="count-old"><li>불러오는 중...</li></ul>
-
-    <h4>▶ 홀/짝 기준</h4>
-    <ul id="oe-recent"><li>불러오는 중...</li></ul>
-    <ul id="oe-mid"><li>불러오는 중...</li></ul>
-    <ul id="oe-old"><li>불러오는 중...</li></ul>
+    <ul id="predict-result">
+        <li>불러오는 중...</li>
+    </ul>
 
     <script>
         fetch('https://ladder-server-clean-production.up.railway.app/predict')
             .then(res => res.json())
             .then(data => {
+                const ul = document.getElementById('predict-result');
+                ul.innerHTML = '';
                 document.getElementById('round-info').textContent = `예측 회차: ${data['예측회차']}회`;
 
-                function render(id, item) {
-                    const ul = document.getElementById(id);
-                    ul.innerHTML = '';
-                    if (!item || item.length === 0) return;
-                    item.forEach((v, i) => {
-                        const li = document.createElement('li');
-                        li.textContent = `${v.value} (빈도: ${v.score})`;
-                        ul.appendChild(li);
-                    });
+                const predict = data['예측값'];
+                if (!predict) {
+                    ul.innerHTML = '<li>예측값 없음</li>';
+                    return;
                 }
 
-                render('side-recent', data['시작방향']?.['최근']);
-                render('side-mid', data['시작방향']?.['중간']);
-                render('side-old', data['시작방향']?.['과거']);
+                const li1 = document.createElement('li');
+                li1.textContent = `시작방향: ${predict['시작방향']}`;
+                ul.appendChild(li1);
 
-                render('count-recent', data['줄수']?.['최근']);
-                render('count-mid', data['줄수']?.['중간']);
-                render('count-old', data['줄수']?.['과거']);
+                const li2 = document.createElement('li');
+                li2.textContent = `줄수: ${predict['줄수']}`;
+                ul.appendChild(li2);
 
-                render('oe-recent', data['홀짝']?.['최근']);
-                render('oe-mid', data['홀짝']?.['중간']);
-                render('oe-old', data['홀짝']?.['과거']);
+                const li3 = document.createElement('li');
+                li3.textContent = `홀짝: ${predict['홀짝']}`;
+                ul.appendChild(li3);
             })
             .catch(err => {
                 document.getElementById('round-info').textContent = '예측 회차: 에러';
-                ['side-recent', 'side-mid', 'side-old', 'count-recent', 'count-mid', 'count-old', 'oe-recent', 'oe-mid', 'oe-old']
-                    .forEach(id => {
-                        document.getElementById(id).innerHTML = '<li>서버 오류</li>';
-                    });
+                document.getElementById('predict-result').innerHTML = '<li>서버 오류</li>';
             });
     </script>
 </body>
