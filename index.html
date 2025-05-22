@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>사다리 예측값</title>
+    <title>사다리 점수 기반 예측</title>
 </head>
 <body>
     <h2>사다리 점수제 예측 결과</h2>
@@ -20,26 +20,23 @@
                 ul.innerHTML = '';
                 document.getElementById('round-info').textContent = `예측 회차: ${data['예측회차']}회`;
 
-                const predict = data['예측값'];
-                if (!predict) {
-                    ul.innerHTML = '<li>예측값 없음</li>';
-                    return;
-                }
+                const result = data['예측값'];
 
-                function showScore(label, item) {
+                function render(label, obj) {
                     const li = document.createElement('li');
                     li.innerHTML = `
-                        <strong>${label}</strong>: ${item.value}<br>
-                        - 최근 20줄: ${item.recent}회<br>
-                        - 전체 288줄: ${item.total}회<br>
-                        - 점수 합계: <b>${item.score}</b>점
+                        <strong>${label}</strong>: ${obj.value} (점수: ${obj.score})<br>
+                        - 최근 20줄: ${obj.recent}회<br>
+                        - 전체 288줄: ${obj.total}회<br>
+                        - 근거:<br>
+                        <ul>${obj.reasons.map(r => `<li>${r}</li>`).join('')}</ul>
                     `;
                     ul.appendChild(li);
                 }
 
-                showScore("시작방향", predict["시작방향"]);
-                showScore("줄수", predict["줄수"]);
-                showScore("홀짝", predict["홀짝"]);
+                render('시작방향', result['시작방향']);
+                render('줄 수', result['줄수']);
+                render('홀/짝', result['홀짝']);
             })
             .catch(err => {
                 document.getElementById('round-info').textContent = '예측 회차: 에러';
