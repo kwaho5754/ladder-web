@@ -49,7 +49,7 @@
   </div>
 
   <script>
-    fetch("/predict")
+    fetch("https://ladder-server-clean-production.up.railway.app/predict")
       .then(data => data.json())
       .then(data => {
         const ul = document.getElementById("result-list");
