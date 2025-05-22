@@ -15,7 +15,7 @@
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 0 8px rgba(0,0,0,0.1);
-      max-width: 600px;
+      max-width: 700px;
       margin-bottom: 30px;
     }
     h1 {
@@ -23,10 +23,19 @@
     }
     ul {
       padding-left: 20px;
-      font-size: 1.2em;
+      font-size: 1.1em;
     }
     li {
-      margin-bottom: 10px;
+      margin-bottom: 16px;
+    }
+    .score {
+      font-weight: bold;
+      color: #0055aa;
+    }
+    .detail {
+      font-size: 0.95em;
+      color: #555;
+      margin-top: 4px;
     }
   </style>
 </head>
@@ -48,9 +57,21 @@
         ul.innerHTML = "";
         round.textContent = `예측 회차: ${data["예측회차"]}회`;
 
-        data["예측값"].forEach((val, idx) => {
+        data["Top3"].forEach((item, idx) => {
           const li = document.createElement("li");
-          li.textContent = `${idx + 1}위: ${val}`;
+          li.innerHTML = `<span class='score'>${idx + 1}위: ${item.값} (점수: ${item.점수})</span>`;
+
+          const details = Object.entries(item.근거)
+            .map(([key, val]) => `- ${key}: ${val}회`)
+            .join("<br>");
+
+          if (details) {
+            const detailDiv = document.createElement("div");
+            detailDiv.className = "detail";
+            detailDiv.innerHTML = details;
+            li.appendChild(detailDiv);
+          }
+
           ul.appendChild(li);
         });
       })
