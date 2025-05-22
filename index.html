@@ -1,47 +1,62 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>사다리 점수 기반 예측</title>
+  <meta charset="UTF-8" />
+  <title>사다리 블럭 예측 결과</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 30px;
+      background: #f4f4f4;
+      color: #333;
+    }
+    .result-box {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin-bottom: 30px;
+    }
+    h1 {
+      color: #222;
+    }
+    ul {
+      padding-left: 20px;
+      font-size: 1.2em;
+    }
+    li {
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 <body>
-    <h2>사다리 점수제 예측 결과</h2>
-    <h3 id="round-info">예측 회차: 불러오는 중...</h3>
-
-    <ul id="predict-result">
-        <li>불러오는 중...</li>
+  <div class="result-box">
+    <h1>사다리 예측 결과</h1>
+    <p><strong id="round">예측 회차: 불러오는 중...</strong></p>
+    <ul id="result-list">
+      <li>불러오는 중...</li>
     </ul>
+  </div>
 
-    <script>
-        fetch('https://ladder-server-clean-production.up.railway.app/predict')
-            .then(res => res.json())
-            .then(data => {
-                const ul = document.getElementById('predict-result');
-                ul.innerHTML = '';
-                document.getElementById('round-info').textContent = `예측 회차: ${data['예측회차']}회`;
+  <script>
+    fetch("/predict")
+      .then(data => data.json())
+      .then(data => {
+        const ul = document.getElementById("result-list");
+        const round = document.getElementById("round");
+        ul.innerHTML = "";
+        round.textContent = `예측 회차: ${data["예측회차"]}회`;
 
-                const result = data['예측값'];
-
-                function render(label, obj) {
-                    const li = document.createElement('li');
-                    li.innerHTML = `
-                        <strong>${label}</strong>: ${obj.value} (점수: ${obj.score})<br>
-                        - 최근 20줄: ${obj.recent}회<br>
-                        - 전체 288줄: ${obj.total}회<br>
-                        - 근거:<br>
-                        <ul>${obj.reasons.map(r => `<li>${r}</li>`).join('')}</ul>
-                    `;
-                    ul.appendChild(li);
-                }
-
-                render('시작방향', result['시작방향']);
-                render('줄 수', result['줄수']);
-                render('홀/짝', result['홀짝']);
-            })
-            .catch(err => {
-                document.getElementById('round-info').textContent = '예측 회차: 에러';
-                document.getElementById('predict-result').innerHTML = '<li>서버 오류</li>';
-            });
-    </script>
+        data["예측값"].forEach((val, idx) => {
+          const li = document.createElement("li");
+          li.textContent = `${idx + 1}위: ${val}`;
+          ul.appendChild(li);
+        });
+      })
+      .catch(() => {
+        document.getElementById("result-list").innerHTML = "<li>서버 오류</li>";
+      });
+  </script>
 </body>
 </html>
