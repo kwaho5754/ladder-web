@@ -2,20 +2,26 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>사다리 예측 요소별 결과</title>
+    <title>사다리 예측 결과 (구간별)</title>
 </head>
 <body>
     <h2>사다리 요소별 예측 결과</h2>
     <h3 id="round-info">예측 회차: 불러오는 중...</h3>
 
     <h4>▶ 시작방향 기준</h4>
-    <ul id="side"><li>불러오는 중...</li></ul>
+    <ul id="side-recent"><li>불러오는 중...</li></ul>
+    <ul id="side-mid"><li>불러오는 중...</li></ul>
+    <ul id="side-old"><li>불러오는 중...</li></ul>
 
     <h4>▶ 줄 수 기준</h4>
-    <ul id="count"><li>불러오는 중...</li></ul>
+    <ul id="count-recent"><li>불러오는 중...</li></ul>
+    <ul id="count-mid"><li>불러오는 중...</li></ul>
+    <ul id="count-old"><li>불러오는 중...</li></ul>
 
     <h4>▶ 홀/짝 기준</h4>
-    <ul id="oe"><li>불러오는 중...</li></ul>
+    <ul id="oe-recent"><li>불러오는 중...</li></ul>
+    <ul id="oe-mid"><li>불러오는 중...</li></ul>
+    <ul id="oe-old"><li>불러오는 중...</li></ul>
 
     <script>
         fetch('https://ladder-server-clean-production.up.railway.app/predict')
@@ -23,25 +29,35 @@
             .then(data => {
                 document.getElementById('round-info').textContent = `예측 회차: ${data['예측회차']}회`;
 
-                function render(listId, topList) {
-                    const ul = document.getElementById(listId);
+                function render(id, item) {
+                    const ul = document.getElementById(id);
                     ul.innerHTML = '';
-                    topList.forEach((item, index) => {
+                    if (!item || item.length === 0) return;
+                    item.forEach((v, i) => {
                         const li = document.createElement('li');
-                        li.textContent = `${index + 1}위: ${item.value} (점수: ${item.score})`;
+                        li.textContent = `${v.value} (빈도: ${v.score})`;
                         ul.appendChild(li);
                     });
                 }
 
-                render('side', data['시작방향'] || []);
-                render('count', data['줄수'] || []);
-                render('oe', data['홀짝'] || []);
+                render('side-recent', data['시작방향']?.['최근']);
+                render('side-mid', data['시작방향']?.['중간']);
+                render('side-old', data['시작방향']?.['과거']);
+
+                render('count-recent', data['줄수']?.['최근']);
+                render('count-mid', data['줄수']?.['중간']);
+                render('count-old', data['줄수']?.['과거']);
+
+                render('oe-recent', data['홀짝']?.['최근']);
+                render('oe-mid', data['홀짝']?.['중간']);
+                render('oe-old', data['홀짝']?.['과거']);
             })
             .catch(err => {
                 document.getElementById('round-info').textContent = '예측 회차: 에러';
-                ['side', 'count', 'oe'].forEach(id => {
-                    document.getElementById(id).innerHTML = '<li>서버 오류</li>';
-                });
+                ['side-recent', 'side-mid', 'side-old', 'count-recent', 'count-mid', 'count-old', 'oe-recent', 'oe-mid', 'oe-old']
+                    .forEach(id => {
+                        document.getElementById(id).innerHTML = '<li>서버 오류</li>';
+                    });
             });
     </script>
 </body>
