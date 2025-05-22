@@ -9,12 +9,13 @@
     <h3 id="round-info">예측 회차: 불러오는 중...</h3>
 
     <h4>▶ 시작방향 기준</h4>
-    <ul id="side-original"><li>불러오는 중...</li></ul>
-    <ul id="side-mirror"><li>불러오는 중...</li></ul>
+    <ul id="side"><li>불러오는 중...</li></ul>
+
+    <h4>▶ 줄 수 기준</h4>
+    <ul id="count"><li>불러오는 중...</li></ul>
 
     <h4>▶ 홀/짝 기준</h4>
-    <ul id="oe-original"><li>불러오는 중...</li></ul>
-    <ul id="oe-mirror"><li>불러오는 중...</li></ul>
+    <ul id="oe"><li>불러오는 중...</li></ul>
 
     <script>
         fetch('https://ladder-server-clean-production.up.railway.app/predict')
@@ -32,14 +33,13 @@
                     });
                 }
 
-                render('side-original', data['시작방향 원본'] || []);
-                render('side-mirror', data['시작방향 대칭'] || []);
-                render('oe-original', data['홀짝 원본'] || []);
-                render('oe-mirror', data['홀짝 대칭'] || []);
+                render('side', data['시작방향'] || []);
+                render('count', data['줄수'] || []);
+                render('oe', data['홀짝'] || []);
             })
             .catch(err => {
                 document.getElementById('round-info').textContent = '예측 회차: 에러';
-                ['side-original', 'side-mirror', 'oe-original', 'oe-mirror'].forEach(id => {
+                ['side', 'count', 'oe'].forEach(id => {
                     document.getElementById(id).innerHTML = '<li>서버 오류</li>';
                 });
             });
