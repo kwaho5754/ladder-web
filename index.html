@@ -1,8 +1,10 @@
+<!-- ⬇️ index.html — 정방향 4줄 블럭 예측 결과 출력 -->
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>사다리 블럭 예측 결과</title>
+  <title>사다리 예측 결과</title>
   <style>
     body {
       font-family: sans-serif;
@@ -32,11 +34,6 @@
       font-weight: bold;
       color: #0055aa;
     }
-    .detail {
-      font-size: 0.95em;
-      color: #555;
-      margin-top: 4px;
-    }
   </style>
 </head>
 <body>
@@ -50,7 +47,7 @@
 
   <script>
     fetch("https://ladder-server-clean-production.up.railway.app/predict")
-      .then(data => data.json())
+      .then(response => response.json())
       .then(data => {
         const ul = document.getElementById("result-list");
         const round = document.getElementById("round");
@@ -59,19 +56,7 @@
 
         data["Top3"].forEach((item, idx) => {
           const li = document.createElement("li");
-          li.innerHTML = `<span class='score'>${idx + 1}위: ${item.값} (점수: ${item.점수})</span>`;
-
-          const details = Object.entries(item.근거)
-            .map(([key, val]) => `- ${key}: ${val}회`)
-            .join("<br>");
-
-          if (details) {
-            const detailDiv = document.createElement("div");
-            detailDiv.className = "detail";
-            detailDiv.innerHTML = details;
-            li.appendChild(detailDiv);
-          }
-
+          li.innerHTML = `<span class='score'>${idx + 1}위: ${item["값"]} (${item["횟수"]}회)</span>`;
           ul.appendChild(li);
         });
       })
